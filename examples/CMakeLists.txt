@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(nlohmann_json REQUIRED)
 find_package(dynamic_interface REQUIRED)
+find_package(Boost REQUIRED COMPONENTS json)
 
 set(PUBLISHERS
   float_publisher
@@ -18,11 +18,19 @@ set(PUBLISHERS
 
 foreach(pub ${PUBLISHERS})
   add_executable(${pub} ${pub}.cpp)
+
+  target_include_directories(${pub} PRIVATE
+    ${Boost_INCLUDE_DIRS}
+  )
+
   ament_target_dependencies(${pub}
     rclcpp
     std_msgs
-    nlohmann_json
     dynamic_interface
+  )
+
+  target_link_libraries(${pub}
+    ${Boost_LIBRARIES}
   )
 
   install(TARGETS ${pub}

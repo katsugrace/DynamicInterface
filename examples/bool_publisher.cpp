@@ -4,7 +4,7 @@
 #include <memory>
 #include <cstdlib>
 
-#include <nlohmann/json.hpp>
+#include <boost/json.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 #include <dynamic_interface/publisher.hpp>
@@ -16,7 +16,7 @@ int main(int argc, char * argv[])
 
   dynamic_interface::Publisher publisher(node, "/dynamic_topic", "std_msgs/msg/Bool");
 
-  nlohmann::json data = {
+  const auto data = boost::json::object{
     {"data", true}
   };
 

@@ -10,7 +10,7 @@ find_package(rcutils REQUIRED)
 find_package(rosidl_typesupport_cpp REQUIRED)
 find_package(rosidl_typesupport_introspection_cpp REQUIRED)
 find_package(rosidl_dynamic_typesupport REQUIRED)
-find_package(nlohmann_json REQUIRED)
+find_package(Boost REQUIRED COMPONENTS json)
 
 include_directories(
   include
@@ -18,6 +18,10 @@ include_directories(
 
 add_library(${PROJECT_NAME}
   src/publisher.cpp
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+  ${Boost_INCLUDE_DIRS}
 )
 
 ament_target_dependencies(${PROJECT_NAME}
@@ -29,7 +33,7 @@ ament_target_dependencies(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-  nlohmann_json::nlohmann_json
+  ${Boost_LIBRARIES}
 )
 
 ament_export_include_directories(include)
@@ -40,7 +44,6 @@ ament_export_dependencies(
   rosidl_typesupport_cpp
   rosidl_typesupport_introspection_cpp
   rosidl_dynamic_typesupport
-  nlohmann_json
 )
 
 install(
