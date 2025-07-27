@@ -7,7 +7,7 @@
 #include <utility>
 #include <string>
 
-#include <nlohmann/json.hpp>
+#include <boost/json.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 namespace dynamic_interface
@@ -32,16 +32,16 @@ public:
     rclcpp::QoS qos = rclcpp::QoS(10));
 
 public:
-  void Publish(const nlohmann::json & data);
+  void Publish(const boost::json::value & data);
 
 private:
   void RecursiveData(
-    const nlohmann::json & data,
+    const boost::json::object & data,
     void * message,
     const rosidl_typesupport_introspection_cpp::MessageMembers * members);
 
   void SetPrimitiveField(
-    const nlohmann::json & value,
+    const boost::json::value & value,
     void * field,
     const rosidl_typesupport_introspection_cpp::MessageMember & member);
 
