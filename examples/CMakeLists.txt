@@ -10,19 +10,24 @@ find_package(std_msgs REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(dynamic_interface REQUIRED)
 
-add_executable(float_publisher
-  float_publisher.cpp
+set(PUBLISHERS
+  float_publisher
+  string_publisher
+  bool_publisher
 )
 
-ament_target_dependencies(float_publisher
-  rclcpp
-  std_msgs
-  nlohmann_json
-  dynamic_interface
-)
+foreach(pub ${PUBLISHERS})
+  add_executable(${pub} ${pub}.cpp)
+  ament_target_dependencies(${pub}
+    rclcpp
+    std_msgs
+    nlohmann_json
+    dynamic_interface
+  )
 
-install(TARGETS float_publisher
-  DESTINATION lib/${PROJECT_NAME}
-)
+  install(TARGETS ${pub}
+    DESTINATION lib/${PROJECT_NAME}
+  )
+endforeach()
 
 ament_package()
