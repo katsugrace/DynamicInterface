@@ -12,12 +12,12 @@
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  const auto node = std::make_shared<rclcpp::Node>("float_publsher");
+  const auto node = std::make_shared<rclcpp::Node>("string_publisher");
 
-  dynamic_interface::Publisher publisher(node, "/dynamic_topic", "std_msgs/msg/Float64");
+  dynamic_interface::Publisher publisher(node, "/dynamic_topic", "std_msgs/msg/String");
 
   nlohmann::json data = {
-    {"data", 123.0}
+    {"data", "Hello, ROS2!"}
   };
 
   rclcpp::Rate rate(1000);
