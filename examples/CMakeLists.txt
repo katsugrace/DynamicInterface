@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(dynamic_interface REQUIRED)
 find_package(Boost REQUIRED COMPONENTS json)
 
@@ -25,7 +24,6 @@ foreach(pub ${PUBLISHERS})
 
   ament_target_dependencies(${pub}
     rclcpp
-    std_msgs
     dynamic_interface
   )
 
