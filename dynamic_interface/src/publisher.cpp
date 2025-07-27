@@ -73,24 +73,24 @@ void Publisher::Publish(const boost::json::value & data)
     }
   };
 
-  void * raw_message = malloc(m_members->size_of_);
-  if (!raw_message) {
+  void * message = malloc(m_members->size_of_);
+  if (!message) {
     RCLCPP_ERROR(m_node->get_logger(), "Memory allocation failed for message");
     return;
   }
 
-  m_members->init_function(raw_message, rosidl_runtime_cpp::MessageInitialization::ALL);
-  std::unique_ptr<void, MessageDeleter> message_guard(raw_message, MessageDeleter{m_members});
+  m_members->init_function(message, rosidl_runtime_cpp::MessageInitialization::ALL);
+  std::unique_ptr<void, MessageDeleter> message_guard(message, MessageDeleter{m_members});
 
   try {
-    RecursiveData(data.as_object(), raw_message, m_members);
-  } catch (const std::exception &e) {
+    RecursiveData(data.as_object(), message, m_members);
+  } catch (const std::exception & e) {
     RCLCPP_ERROR(m_node->get_logger(), "JSON parse error: %s", e.what());
     return;
   }
 
   rclcpp::SerializedMessage serializedMessage;
-  rmw_ret_t ret = rmw_serialize(raw_message, m_serialize, &serializedMessage.get_rcl_serialized_message());
+  const auto ret = rmw_serialize(message, m_serialize, &serializedMessage.get_rcl_serialized_message());
   if (!(RMW_RET_OK == ret)) {
     RCLCPP_ERROR(m_node->get_logger(), "rmw_serialize failed with code %d", static_cast<int>(ret));
     return;
@@ -134,10 +134,11 @@ void Publisher::RecursiveData(
 
       const auto & arr = fieldJson.as_array();
       if (member.members_ && member.members_->data) {
-        auto subMembers = static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(member.members_->data);
+        const auto subMembers = static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(member.members_->data);
         for (size_t idx = 0; idx < arr.size(); ++idx) {
           RecursiveData(arr[idx].as_object(), reinterpret_cast<char *>(field) + idx * subMembers->size_of_, subMembers);
         }
+
         continue;
       }
 
@@ -149,7 +150,7 @@ void Publisher::RecursiveData(
     }
 
     if (member.members_ && member.members_->data) {
-      auto subMembers = static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(member.members_->data);
+      const auto subMembers = static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(member.members_->data);
       RecursiveData(fieldJson.as_object(), field, subMembers);
       continue;
     }
@@ -223,16 +224,16 @@ void Publisher::SetPrimitiveField(
   };
 
   const auto it = setters.find(member.type_id_);
-  if (it == setters.end()) {
+  if (setters.end() == it) {
     throw std::runtime_error("Unsupported type_id: " + std::to_string(member.type_id_));
   }
 
   std::get<SetFieldFunc>(*it)(field, value);
 }
 
-size_t Publisher::GetPrimitiveSize(const rosidl_typesupport_introspection_cpp::MessageMember & member)
+size_t Publisher::GetPrimitiveSize(const rosidl_typesupport_introspection_cpp::MessageMember & member) const
 {
-  static const std::unordered_map<uint8_t, size_t> type_size_map = {
+  static const std::unordered_map<uint8_t, size_t> typeSizes = {
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOL,    sizeof(bool)},
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_BYTE,    sizeof(uint8_t)},
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8,   sizeof(uint8_t)},
@@ -249,8 +250,8 @@ size_t Publisher::GetPrimitiveSize(const rosidl_typesupport_introspection_cpp::M
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING,  sizeof(std::string)}
   };
 
-  const auto it = type_size_map.find(member.type_id_);
-  if (type_size_map.end() == it) {
+  const auto it = typeSizes.find(member.type_id_);
+  if (typeSizes.end() == it) {
     throw std::runtime_error(
       "Unknown primitive size for type_id: " + std::to_string(member.type_id_));
   }
