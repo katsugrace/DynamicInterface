@@ -4,7 +4,6 @@
 #define DYNAMIC_INTERFACE__PUBLISHER_HPP_
 
 #include <memory>
-#include <utility>
 #include <string>
 
 #include <boost/json.hpp>
@@ -45,7 +44,7 @@ private:
     void * field,
     const rosidl_typesupport_introspection_cpp::MessageMember & member);
 
-  size_t GetPrimitiveSize(const rosidl_typesupport_introspection_cpp::MessageMember & member);
+  size_t GetPrimitiveSize(const rosidl_typesupport_introspection_cpp::MessageMember & member) const;
 
 private:
   std::shared_ptr<rclcpp::Node> m_node;
