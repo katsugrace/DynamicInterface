@@ -1,8 +1,6 @@
 // Copyright (c) 2025 Victor Drobizov <drobizov.victor@gmail.com>
 
-#include <thread>
 #include <memory>
-#include <cstdlib>
 
 #include <boost/json.hpp>
 #include <rclcpp/rclcpp.hpp>

@@ -13,6 +13,10 @@ set(PUBLISHERS
   float_publisher
   string_publisher
   bool_publisher
+
+  float_subscriber
+  string_subscriber
+  bool_subscriber
 )
 
 foreach(pub ${PUBLISHERS})
