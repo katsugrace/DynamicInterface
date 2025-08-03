@@ -89,7 +89,7 @@ void Subscriber::OnMessage(const rclcpp::SerializedMessage & data)
   };
 
   std::unique_ptr<void, MessageDeleter> guard(message, MessageDeleter{m_members});
-  if (!(rmw_deserialize(&data.get_rcl_serialized_message(), m_serialize, message) == RMW_RET_OK)) {
+  if (!(RMW_RET_OK == rmw_deserialize(&data.get_rcl_serialized_message(), m_serialize, message))) {
     RCLCPP_ERROR(m_node->get_logger(), "Deserialization failed");
     return;
   }
@@ -114,16 +114,16 @@ void Subscriber::ToJson(
     void * field = reinterpret_cast<char *>(message) + member.offset_;
     if (member.is_array_) {
       json::array arr;
-      size_t size = member.array_size_;
+      const size_t arrSize = member.array_size_;
       if (member.members_ && member.members_->data) {
         const auto * sub = static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(member.members_->data);
-        for (size_t j = 0; j < size; ++j) {
+        for (size_t j = 0; j < arrSize; ++j) {
           json::object subJson;
           ToJson(reinterpret_cast<char *>(field) + j * sub->size_of_, sub, subJson);
           arr.push_back(subJson);
         }
       } else {
-        for (size_t j = 0; j < size; ++j) {
+        for (size_t j = 0; j < arrSize; ++j) {
           arr.push_back(ExtractPrimitive(reinterpret_cast<char *>(field) + j * GetPrimitiveSize(member), member));
         }
       }
