@@ -7,6 +7,8 @@
 namespace dynamic_interface
 {
 
+namespace json = boost::json;
+
 Publisher::Publisher(
   std::shared_ptr<rclcpp::Node> node,
   std::string name,
@@ -54,7 +56,7 @@ Publisher::Publisher(
   }
 }
 
-void Publisher::Publish(const boost::json::value & data)
+void Publisher::Publish(const json::value & data)
 {
   if (!m_members || !m_publisher) {
     RCLCPP_ERROR(m_node->get_logger(), "Publisher not initialized properly");
@@ -104,7 +106,7 @@ void Publisher::Publish(const boost::json::value & data)
 }
 
 void Publisher::RecursiveData(
-  const boost::json::object & data,
+  const json::object & data,
   void * message,
   const rosidl_typesupport_introspection_cpp::MessageMembers * members)
 {
@@ -121,7 +123,7 @@ void Publisher::RecursiveData(
       throw std::runtime_error("JSON missing field: " + name);
     }
 
-    const boost::json::value & fieldJson = it->value();
+    const json::value & fieldJson = it->value();
     void * field = reinterpret_cast<char *>(message) + member.offset_;
     if (!field) {
       throw std::runtime_error("Invalid field offset for: " + name);
@@ -160,66 +162,66 @@ void Publisher::RecursiveData(
 }
 
 void Publisher::SetPrimitiveField(
-  const boost::json::value & value,
+  const json::value & value,
   void * field,
   const rosidl_typesupport_introspection_cpp::MessageMember & member)
 {
-  using SetFieldFunc = std::function<void(void *, const boost::json::value &)>;
+  using SetFieldFunc = std::function<void(void *, const json::value &)>;
   static const std::unordered_map<uint8_t, SetFieldFunc> setters = {
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOL,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<bool *>(f) = v.as_bool();}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_BYTE,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<uint8_t *>(f) = static_cast<uint8_t>(v.as_uint64());}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<uint8_t *>(f) = static_cast<uint8_t>(v.as_uint64());}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<int8_t *>(f) = static_cast<uint8_t>(v.as_uint64());}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<int8_t *>(f) = static_cast<uint8_t>(v.as_uint64());}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<uint16_t *>(f) = static_cast<uint16_t>(v.as_uint64());}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<int16_t *>(f) = static_cast<int16_t>(v.as_int64());}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<uint32_t *>(f) = static_cast<uint32_t>(v.as_uint64());}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<int32_t *>(f) = static_cast<int32_t>(v.as_int64());}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<uint64_t *>(f) = v.as_uint64();}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<int64_t *>(f) = v.as_int64();}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<float *>(f) = static_cast<float>(v.as_double());}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<double *>(f) = v.as_double();}},
 
     {rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING,
-      [](void * f, const boost::json::value & v) {
+      [](void * f, const json::value & v) {
         *reinterpret_cast<std::string *>(f) = v.as_string().c_str();}}
   };
 
