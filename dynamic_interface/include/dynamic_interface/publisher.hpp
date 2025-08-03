@@ -12,6 +12,8 @@
 namespace dynamic_interface
 {
 
+namespace json = boost::json;
+
 class Publisher
 {
 public:
@@ -31,16 +33,16 @@ public:
     rclcpp::QoS qos = rclcpp::QoS(10));
 
 public:
-  void Publish(const boost::json::value & data);
+  void Publish(const json::value & data);
 
 private:
   void RecursiveData(
-    const boost::json::object & data,
+    const json::object & data,
     void * message,
     const rosidl_typesupport_introspection_cpp::MessageMembers * members);
 
   void SetPrimitiveField(
-    const boost::json::value & value,
+    const json::value & value,
     void * field,
     const rosidl_typesupport_introspection_cpp::MessageMember & member);
 
