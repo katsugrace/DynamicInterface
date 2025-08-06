@@ -19,6 +19,8 @@ include_directories(
 add_library(${PROJECT_NAME}
   src/publisher.cpp
   src/subscriber.cpp
+
+  src/service_client.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

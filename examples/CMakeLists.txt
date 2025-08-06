@@ -17,6 +17,8 @@ set(PUBLISHERS
   float_subscriber
   string_subscriber
   bool_subscriber
+
+  add_two_sum_client
 )
 
 foreach(pub ${PUBLISHERS})
